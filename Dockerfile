@@ -20,8 +20,9 @@ COPY install.sh /install.sh
 
 RUN set -ex && \
     apk upgrade --update && \
-    apk add --update libstdc++ curl ca-certificates bash && \
-    /bin/sh /install.sh
+    apk add --update libstdc++ curl ca-certificates bash
+
+RUN /bin/sh /install.sh
 
 CMD ["java", "--version"]
 

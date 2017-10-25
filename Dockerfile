@@ -16,15 +16,12 @@ ENV JAVA_VERSION_MAJOR=8 \
     GLIBC_VERSION=2.23-r3 \
     LANG=C.UTF-8
 
+COPY install.sh /install.sh
+
 RUN set -ex && \
     apk upgrade --update && \
-    apk add --update libstdc++ curl ca-certificates bash
-
-COPY entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
-
-RUN ["chmod","+x","/entrypoint.sh"]
+    apk add --update libstdc++ curl ca-certificates bash && \
+    chmod -x /install.sh && /install.sh
 
 CMD ["java", "--version"]
 

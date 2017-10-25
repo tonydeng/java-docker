@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function install_glibc() {
+install_glibc() {
     for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do
         curl -sSL https://github.com/andyshinn/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk
     done
@@ -16,8 +16,9 @@ function install_glibc() {
     /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib
 }
 
-function install_jdk() {
-    curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz https://edelivery.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/090f390dda5b47b9b721c7dfaa008135/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz
+install_jdk() {
+    # curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz https://edelivery.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/090f390dda5b47b9b721c7dfaa008135/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz
+    curl -jksSL -H "Cookie: oraclelicense=accept-securebackup-cookie"  -H "Connection: keep-alive"  -o /tmp/java.tar.gz http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_BUILD}-b${JAVA_VERSION_BUILD}/090f390dda5b47b9b721c7dfaa008135/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz
 
     gunzip /tmp/java.tar.gz
 
@@ -27,15 +28,15 @@ function install_jdk() {
 
     if [ "${JAVA_JCE}" == "unlimited" ]; then
         echo "Installing Unlimited JCE policy" >&2
-        curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip https://edelivery.oracle.com/otn-pub/java/jce/${JAVA_VERSION_MAJOR}/jce_policy-${JAVA_VERSION_MAJOR}.zip
-        cd /tmp
+        curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip http://download.oracle.com/otn-pub/java/jce/${JAVA_VERSION_MAJOR}/jce_policy-${JAVA_VERSION_MAJOR}.zip
+        cd /tmp || exit 1
         unzip /tmp/jce_policy-${JAVA_VERSION_MAJOR}.zip
         cp -v /tmp/UnlimitedJCEPolicyJDK8/*.jar /opt/jdk/jre/lib/security
     fi
     sed -i 's/#networkaddress.cache.ttl=-1/networkaddress.cache.ttl=10/' $JAVA_HOME/jre/lib/security/java.security
 }
 
-function clean() {
+clean() {
     apk del curl glibc-i18n
     rm -rf /opt/jdk/*src.zip \
            /opt/jdk/lib/missioncontrol \

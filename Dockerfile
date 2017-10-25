@@ -20,7 +20,8 @@ COPY install.sh /install.sh
 
 RUN set -ex && \
     apk upgrade --update && \
-    apk add --update libstdc++ curl ca-certificates bash
+    apk add --update libstdc++ curl ca-certificates bash && \
+    curl -jksSL -H "Cookie: oraclelicense=accept-securebackup-cookie"  -H "Connection: keep-alive"  -o /tmp/java.tar.gz http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_BUILD}-b${JAVA_VERSION_BUILD}/090f390dda5b47b9b721c7dfaa008135/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz
 
 RUN /bin/sh /install.sh
 
